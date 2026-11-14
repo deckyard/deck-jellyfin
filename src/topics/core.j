@@ -74,6 +74,16 @@ func fail(message as string) {
 }
 
 /**
+ * Throw a reached cap: kind "limit", the message as `fail` writes it.
+ *
+ * @param message {string} what was over the cap, without the `jellyfin: ` prefix
+ * @throws {Error} kind "limit", always
+ */
+func failLimit(message as string) {
+    throw Error{kind: "limit", message: "jellyfin: " + $message};
+}
+
+/**
  * A request the server refused: its status is not 2xx.
  *
  * @field kind {string} always "jellyfin.http"
@@ -401,7 +411,9 @@ func exchange(c as Client, method as string, path as string, body as string, wha
     try {
         return task.waitTimeout($t, $timeoutMs);
     } catch (e) {
-        if ($e.message == "task cancelled") {
+        # A cancel is kind "cancelled" (jennifer after 0.25); the message
+        # match is for older interpreters and goes with the next floor raise.
+        if ($e.kind == "cancelled" or $e.message == "task cancelled") {
             task.cancel($t);
             task.discard($t);
             throw $e;
@@ -411,7 +423,10 @@ func exchange(c as Client, method as string, path as string, body as string, wha
             task.discard($t);
             fail(io.sprintf("%s: no answer within %d ms", $what, $timeoutMs));
         }
-        if (strings.startsWith($e.message, "http: ") and strings.contains($e.message, " exceed")) {
+        # A cap is kind "limit" (jennifer after 0.25: http, net); the message
+        # match is for older interpreters and goes with the next floor raise.
+        if ($e.kind == "limit" or
+            (strings.startsWith($e.message, "http: ") and strings.contains($e.message, " exceed"))) {
             fail(io.sprintf("%s: the response is over %d bytes", $what, $maxBytes));
         }
         fail($what + ": cannot reach " + shown($c.baseUrl) + ": " + cleaned($e.message, 300));
