@@ -15,7 +15,8 @@
  * Every request has a deadline and a response cap; plain `http` is refused
  * except to this machine unless allowed. A request the server refused
  * throws `HttpError` (kind `jellyfin.http`) with its `status` and validation
- * `fields`; every other failure is `Error{kind: "jellyfin"}`.
+ * `fields`; `allItems` past its `most` is kind `"limit"`; every other
+ * failure is `Error{kind: "jellyfin"}`.
  *
  * | topic | covers |
  * | --- | --- |

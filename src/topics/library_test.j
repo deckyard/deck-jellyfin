@@ -117,6 +117,7 @@ func testAllItemsPages() {
         allItems($c, ["includeItemTypes=Episode"], 3);
         missed("more than asked for");
     } catch (e) {
+        testing.assertEqual($e.kind, "limit");
         testing.assertEqual(
             $e.message,
             "jellyfin: allItems: 5 items match, more than the 3 asked for");

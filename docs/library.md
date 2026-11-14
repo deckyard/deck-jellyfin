@@ -31,7 +31,7 @@ io.printf("%d unwatched films, the newest %d:\n", $p.total, len($p.items));
 ```
 
 `allItems` reads page after page, and refuses when more than `most` match
-rather than reading an unbounded result. It also refuses pages that do not
+(an error of kind `"limit"`) rather than reading an unbounded result. It also refuses pages that do not
 add up (a server that moved the window or sent more than the total), so
 it never returns a short or doubled list. Each item keeps its JSON, about
 22 KB of memory for a typical one, so `most` is capped at `MAX_ITEMS`

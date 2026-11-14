@@ -294,7 +294,7 @@ export func items(c as Client, query as list of string) {
  * @param query {list of string} parameters as for `items`, without `startIndex` or `limit`
  * @param most {int} the most items to read, 1 to `MAX_ITEMS`; more is an error. Each item keeps its JSON: about 22 KB of memory for a typical item
  * @return {list of Item} the items
- * @throws {Error} kind "jellyfin" when more than `most` items match, the query sets `startIndex`, `limit` or `enableTotalRecordCount`, the pages the server sends do not add up, a parameter is malformed, or a request fails
+ * @throws {Error} kind "limit" when more than `most` items match; kind "jellyfin" when the query sets `startIndex`, `limit` or `enableTotalRecordCount`, the pages the server sends do not add up, a parameter is malformed, or a request fails
  * @example
  *   def all as list of jellyfin.Item init jellyfin.allItems($c, ["includeItemTypes=Episode", "recursive=true", "isPlayed=false"], 5000);
  */
@@ -317,7 +317,10 @@ export func allItems(c as Client, query as list of string, most as int) {
         def p as Page init items($c, $q);
         $total = $p.total;
         if ($total > $most) {
-            fail(io.sprintf("allItems: %d items match, more than the %d asked for", $total, $most));
+            failLimit(io.sprintf(
+                "allItems: %d items match, more than the %d asked for",
+                $total,
+                $most));
         }
         if ($p.start != $start or $total < $start + len($p.items) or len($out) +
             len($p.items) > $most) {

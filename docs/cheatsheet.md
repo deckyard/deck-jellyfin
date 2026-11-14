@@ -12,8 +12,9 @@ import "@deckyard/jellyfin/" as jellyfin;
 
 A request the server refused throws `HttpError` (kind `jellyfin.http`) with
 the HTTP `status` and the validation errors as `fields` (field -> first
-message); every other failure is `Error{kind: "jellyfin"}` (a cancelled task
-stays "task cancelled"). A `c` argument
+message); `allItems` past its `most` is kind `"limit"`; every other failure is
+`Error{kind: "jellyfin"}` (a cancelled task stays kind `"cancelled"`, "task
+cancelled"). A `c` argument
 is a `Client`; a `query` is a `list of string` of `name=value` parameters.
 "Per-user" calls need a user: `login`, or `withUser` with an API key.
 
