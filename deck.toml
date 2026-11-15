@@ -1,6 +1,6 @@
 [package]
 name = "@deckyard/jellyfin"
-version = "0.1.0"
+version = "0.2.0"
 description = "Jellyfin media server REST API: sign-in and API keys, libraries, items with paging and search, resume, next up, played and favourite marks, images, users, scans, tasks, sessions"
 license = "LGPL-3.0-only"
 authors = ["mplx <mplx@jennifer-lang.dev>"]
