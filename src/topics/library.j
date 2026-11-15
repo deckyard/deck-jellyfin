@@ -501,7 +501,7 @@ export func setFavorite(c as Client, id as string, favorite as bool) {
  * @param maxWidth {int} scale it down to at most this width, 0 for the original size
  * @return {bytes} the image (JPEG, PNG or WebP, as stored)
  * @throws {HttpError} kind "jellyfin.http" when the item has no such image (status 404) or another status is not 2xx
- * @throws {Error} kind "jellyfin" when the type is unknown, or the image is larger than `maxBytes`
+ * @throws {Error} kind "jellyfin" when the type is unknown; kind "limit" when the image is larger than `maxBytes`
  * @example
  *   fs.writeBytes("poster.jpg", jellyfin.image($c, $movie.id, "Primary", 600));
  */
