@@ -15,8 +15,12 @@
  * Every request has a deadline and a response cap; plain `http` is refused
  * except to this machine unless allowed. A request the server refused
  * throws `HttpError` (kind `jellyfin.http`) with its `status` and validation
- * `fields`; `allItems` past its `most` is kind `"limit"`; every other
- * failure is `Error{kind: "jellyfin"}`.
+ * `fields`. The situations every library shares have their generic kinds: a
+ * response over the cap, a JSON answer past the decoder's caps and
+ * `allItems` past its `most` are `"limit"`, a deadline `"timeout"`, a reply
+ * cut short `"closed"`, a network failure (refused, reset, unreachable, DNS,
+ * TLS) the interpreter's `net.NetError` (`"net"`), passed on unchanged; every
+ * other failure is `Error{kind: "jellyfin"}`.
  *
  * | topic | covers |
  * | --- | --- |

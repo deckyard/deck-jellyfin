@@ -12,7 +12,11 @@ import "@deckyard/jellyfin/" as jellyfin;
 
 A request the server refused throws `HttpError` (kind `jellyfin.http`) with
 the HTTP `status` and the validation errors as `fields` (field -> first
-message); `allItems` past its `most` is kind `"limit"`; every other failure is
+message); a response over its cap, a JSON answer past the decoder's caps and
+`allItems` past its `most` are kind `"limit"`, a deadline kind `"timeout"`, a reply
+cut short kind `"closed"`; a network failure is the
+interpreter's `net.NetError` (kind `"net"`, with `reason`, `sent` and `replied`),
+passed on unchanged; every other failure is
 `Error{kind: "jellyfin"}` (a cancelled task stays kind `"cancelled"`, "task
 cancelled"). A `c` argument
 is a `Client`; a `query` is a `list of string` of `name=value` parameters.

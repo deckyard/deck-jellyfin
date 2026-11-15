@@ -421,13 +421,25 @@ func exchange(c as Client, method as string, path as string, body as string, wha
         if ($e.kind == "timeout") {
             task.cancel($t);
             task.discard($t);
-            fail(io.sprintf("%s: no answer within %d ms", $what, $timeoutMs));
+            throw Error{
+                kind: "timeout",
+                message: io.sprintf("jellyfin: %s: no answer within %d ms", $what, $timeoutMs)
+            };
         }
         # A cap is kind "limit" (jennifer after 0.25: http, net); the message
         # match is for older interpreters and goes with the next floor raise.
         if ($e.kind == "limit" or
             (strings.startsWith($e.message, "http: ") and strings.contains($e.message, " exceed"))) {
-            fail(io.sprintf("%s: the response is over %d bytes", $what, $maxBytes));
+            failLimit(io.sprintf("%s: the response is over %d bytes", $what, $maxBytes));
+        }
+        # A reply cut short is kind "closed": passed on unchanged.
+        if ($e.kind == "closed") {
+            throw $e;
+        }
+        # A network failure (refused, reset, unreachable, DNS, TLS) is a
+        # net.NetError: passed on unchanged, so its fields survive.
+        if ($e.kind == "net") {
+            throw $e;
         }
         fail($what + ": cannot reach " + shown($c.baseUrl) + ": " + cleaned($e.message, 300));
     }
@@ -470,6 +482,10 @@ func jsonBody(r as http.BytesResponse, what as string) {
     try {
         return json.decode($text);
     } catch (e) {
+        # a decoder cap (nesting, nodes) is kind "limit": passed on unchanged
+        if ($e.kind == "limit") {
+            throw $e;
+        }
         fail($what + ": the response is not JSON: " + shown($text));
     }
 }
@@ -568,7 +584,8 @@ func fieldText(fields as map of string to string) {
  * @param password {string} the password, `""` for a user without one
  * @return {Client} the signed-in client
  * @throws {HttpError} kind "jellyfin.http" when the server refuses the name or password (status 401) or another status is not 2xx
- * @throws {Error} kind "jellyfin" when the server cannot be reached or answers malformed
+ * @throws {Error} kind "jellyfin" when the server answers malformed; kind "timeout" when it does not answer in time
+ * @throws {net.NetError} kind "net" when the network fails (refused, unreachable, DNS, TLS)
  * @example
  *   $c = jellyfin.login($c, "alice", os.getEnv("JELLYFIN_PASSWORD"));
  */

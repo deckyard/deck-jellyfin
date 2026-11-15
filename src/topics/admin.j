@@ -104,7 +104,8 @@ export def struct Session {
  *
  * @param c {Client} the client
  * @return {ServerInfo} the server
- * @throws {Error} kind "jellyfin" when the server cannot be reached, is not Jellyfin, or is older than `MIN_MAJOR`
+ * @throws {Error} kind "jellyfin" when the server is not Jellyfin or is older than `MIN_MAJOR`; kind "timeout" when it does not answer in time
+ * @throws {net.NetError} kind "net" when the network fails (refused, unreachable, DNS, TLS)
  * @example
  *   def s as jellyfin.ServerInfo init jellyfin.serverInfo($c);
  *   io.printf("%s %s\n", $s.name, $s.version);

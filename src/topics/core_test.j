@@ -246,7 +246,8 @@ func testCallAndDeadlines() {
         "GET /Items/" + ITEM + "/Similar?limit=5": "200\n\n" + '{"Items":[],"TotalRecordCount":0}',
         "GET /Persons/slow": "SLEEP\n\n",
         "GET /Persons/big": "200\n\n" + '{"x":"' + strings.repeat("y", 70000) + '"}',
-        "GET /Persons/html": "200\n\n<html>"
+        "GET /Persons/html": "200\n\n<html>",
+        "GET /Persons/deep": "200\n\n" + strings.repeat("[", 1100) + strings.repeat("]", 1100)
     });
     def c as Client init fakeClient($f);
     testing.assertEqual(
@@ -258,7 +259,16 @@ func testCallAndDeadlines() {
         call(withMaxBytes($c, 65536), "GET", "/Persons/big", [], json.decode("null"));
         missed("a big response");
     } catch (e) {
-        testing.assertContains($e.message, "the response is over 65536 bytes");
+        testing.assertEqual($e.kind, "limit");
+        testing.assertContains(
+            $e.message,
+            "jellyfin: GET /Persons/big: the response is over 65536 bytes");
+    }
+    try {
+        call($c, "GET", "/Persons/deep", [], json.decode("null"));
+        missed("a JSON past the decoder's nesting cap");
+    } catch (e) {
+        testing.assertEqual($e.kind, "limit");
     }
     try {
         call($c, "GET", "/Persons/html", [], json.decode("null"));
@@ -271,6 +281,7 @@ func testCallAndDeadlines() {
         call(withTimeout($c, 1000), "GET", "/Persons/slow", [], json.decode("null"));
         missed("a slow server");
     } catch (e) {
+        testing.assertEqual($e.kind, "timeout");
         testing.assertEqual($e.message, "jellyfin: GET /Persons/slow: no answer within 1000 ms");
     }
     testing.assertTrue(time.milliseconds(time.sub(time.now(), $started)) < 2500);
@@ -299,11 +310,26 @@ func testCallAndDeadlines() {
         queryOf(["searchTerm=Star Wars & co"]),
         "?searchTerm=Star%20Wars%20%26%20co");
     stopFake($f);
-    try {
-        serverInfo(client("http://127.0.0.1:1"));
-        missed("nobody listening");
-    } catch (e) {
-        testing.assertContains($e.message, "cannot reach");
+}
+
+# Nobody listening: the net.NetError reaches the caller unchanged, its fields
+# readable, and the token is in no message.
+func testANetworkFailurePassesOnUnchanged() {
+    for (def c in [
+        client("http://127.0.0.1:1"),
+        withToken(client("http://127.0.0.1:1"), "t0k3nt0k3n")
+    ]) {
+        try {
+            serverInfo($c);
+            missed("nobody listening");
+        } catch (e) {
+            testing.assertEqual($e.kind, "net");
+            testing.assertEqual($e.reason, "refused");
+            testing.assertEqual($e.op, "connect");
+            testing.assertFalse($e.sent);
+            testing.assertFalse($e.replied);
+            testing.assertFalse(strings.contains($e.message, "t0k3n"));
+        }
     }
 }
 
