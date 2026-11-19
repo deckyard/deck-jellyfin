@@ -174,12 +174,11 @@ func testTheAuthorizationHeader() {
         "dev-0001");
     testing.assertEqual(
         authorization($c),
-        "MediaBrowser Client=\"Media Sync\", Device=\"backup-host\", DeviceId=\"dev-0001\", Version=\"" +
-            VERSION + "\"");
+        "MediaBrowser Client=\"Media Sync\", Device=\"backup-host\", DeviceId=\"dev-0001\", Version=\"1\"");
     testing.assertEqual(
         authorization(withToken($c, TOKEN)),
-        "MediaBrowser Client=\"Media Sync\", Device=\"backup-host\", DeviceId=\"dev-0001\", Version=\"" +
-            VERSION + "\", Token=\"" + TOKEN + "\"");
+        "MediaBrowser Client=\"Media Sync\", Device=\"backup-host\", DeviceId=\"dev-0001\", Version=\"1\", Token=\"" +
+            TOKEN + "\"");
     for (def bad in [["a\"b", "d", "dev-0001"], ["a", "d,e", "dev-0001"], ["a", "d", "x"]]) {
         try {
             withDevice($c, $bad[0], $bad[1], $bad[2]);

@@ -27,10 +27,10 @@ administration; `call` reaches the REST side of them.
   not answer as Jellyfin.
 - **One authorization header.** Every request carries
   `Authorization: MediaBrowser Client=..., Device=..., DeviceId=...,
-  Version=..., Token=...`, the description's only security scheme, with the
-  deck's `VERSION`. Names, the device id and the token are checked so no
-  quote or comma can break the header, and re-checked on every request,
-  since `Client` fields are public.
+  Version=1, Token=...`, the description's only security scheme. Jellyfin
+  only shows the version, so it is a fixed `1`. Names, the device id and
+  the token are checked so no quote or comma can break the header, and
+  re-checked on every request, since `Client` fields are public.
 - **Device identity.** `client` picks a random device id; `withDevice` sets
   a stable one. A login ends the earlier session of the same user and
   device id, so a long-running program should keep its own.

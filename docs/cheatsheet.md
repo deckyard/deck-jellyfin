@@ -26,7 +26,6 @@ is a `Client`; a `query` is a `list of string` of `name=value` parameters.
 
 | Constant | Value | Meaning |
 |---|---|---|
-| `VERSION` | `"0.1.0"` | this deck's version, sent in the authorization header |
 | `DEFAULT_TIMEOUT_MS` | `30000` | how long one request may take |
 | `DEFAULT_MAX_BYTES` | `16777216` | the largest response read |
 | `MIN_MAJOR` | `10` | the oldest Jellyfin major version `serverInfo` accepts |

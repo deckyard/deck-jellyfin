@@ -28,6 +28,9 @@ def const PARAM as string init '^[A-Za-z][A-Za-z0-9]*$';
 # what a client or device name may hold in the authorization header
 def const LABEL as string init '^[A-Za-z0-9 ._()-]{1,64}$';
 
+# the client version the authorization header names; Jellyfin only shows it
+def const CLIENT_VERSION as string init "1";
+
 # a token or API key: letters, digits and characters URL decoding leaves alone
 def const TOKEN_FORM as string init '^[A-Za-z0-9._~-]{8,512}$';
 
@@ -350,7 +353,7 @@ func authorization(c as Client) {
     }
     def h as string init "MediaBrowser Client=\"" + $c.clientName + "\", Device=\"" +
         $c.deviceName +
-        "\", DeviceId=\"" + $c.deviceId + "\", Version=\"" + VERSION + "\"";
+        "\", DeviceId=\"" + $c.deviceId + "\", Version=\"" + CLIENT_VERSION + "\"";
     if ($c.token != "") {
         $h = $h + ", Token=\"" + $c.token + "\"";
     }
