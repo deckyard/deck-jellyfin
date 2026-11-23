@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # jellyfin - white-box tests for the library topic. Spliced into
 # jellyfin_test.j via include.
@@ -34,7 +34,7 @@ func pageJson(ids as list of string, total as int, start as int) {
  */
 func guid(n as int) {
     def s as string init convert.toString($n);
-    return strings.repeat("0", 32 - len($s)) + $s;
+    return strings.replicate("0", 32 - len($s)) + $s;
 }
 
 func testItemsAreRead() {
@@ -177,7 +177,7 @@ func testMarksImagesAndRefresh() {
     setPlayed($c, ITEM, false);
     setFavorite($c, ITEM, true);
     setFavorite($c, ITEM, false);
-    testing.assertEqual(convert.stringFromBytes("utf-8", image($c, ITEM, "Primary", 300)), $png);
+    testing.assertEqual(encoding.decode("utf-8", image($c, ITEM, "Primary", 300)), $png);
     refreshItem($c, ITEM);
     try {
         image($c, ITEM, "Poster", 0);

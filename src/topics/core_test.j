@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # jellyfin - white-box tests for the core topic, and the fake server the
 # other overlays use. Spliced into jellyfin_test.j via include.
@@ -37,7 +37,8 @@ func missed(what as string) {
  * Start a fake Jellyfin server. An answer is looked up by `METHOD path?query`,
  * then `METHOD path`; it is the status, a newline, header lines `Name: value`,
  * an empty line and the body; `BASE` in it becomes the server's base URL. A
- * request with no answer gets 404 and an OperationOutcome.
+ * request with no answer gets 404 and an OperationOutcome; an answer whose
+ * status is `SLEEP <ms>` waits that many milliseconds, then answers 200 `{}`.
  *
  * @param answers {map of string to string} the answers
  * @return {Fake} the server
@@ -79,7 +80,7 @@ func serveFake(srv as httpd.Server, answers as map of string to string, base as 
                 $line[] = $h + "=" + httpd.header($req, $h);
             }
         }
-        $line[] = convert.stringFromBytes("utf-8", httpd.body($req));
+        $line[] = encoding.decode("utf-8", httpd.body($req));
         $seen[] = strings.join($line, "|");
         def spec as string init "404\n\n" +
             '{"title":"Not Found","detail":"no answer for ' + $key + '"}';
@@ -95,8 +96,8 @@ func serveFake(srv as httpd.Server, answers as map of string to string, base as 
             def at as int init strings.indexOf($h, ": ");
             httpd.setHeader($req, $h[..$at], $h[$at + 2..]);
         }
-        if ($head[0] == "SLEEP") {
-            time.sleep(time.fromMilliseconds(3000));
+        if (strings.startsWith($head[0], "SLEEP ")) {
+            time.sleep(time.fromMilliseconds(convert.toInt($head[0][len("SLEEP ")..])));
             httpd.respond($req, 200, '{}');
         } else {
             httpd.respond($req, convert.toInt($head[0]), $spec[$split + 2..]);
@@ -243,10 +244,10 @@ func testLoginLogoutAndErrors() {
 func testCallAndDeadlines() {
     def f as Fake init startFake({
         "GET /Items/" + ITEM + "/Similar?limit=5": "200\n\n" + '{"Items":[],"TotalRecordCount":0}',
-        "GET /Persons/slow": "SLEEP\n\n",
-        "GET /Persons/big": "200\n\n" + '{"x":"' + strings.repeat("y", 70000) + '"}',
+        "GET /Persons/slow": "SLEEP 1250\n\n",
+        "GET /Persons/big": "200\n\n" + '{"x":"' + strings.replicate("y", 70000) + '"}',
         "GET /Persons/html": "200\n\n<html>",
-        "GET /Persons/deep": "200\n\n" + strings.repeat("[", 1100) + strings.repeat("]", 1100)
+        "GET /Persons/deep": "200\n\n" + strings.replicate("[", 1100) + strings.replicate("]", 1100)
     });
     def c as Client init fakeClient($f);
     testing.assertEqual(
@@ -275,6 +276,7 @@ func testCallAndDeadlines() {
     } catch (e) {
         testing.assertContains($e.message, "the response is not JSON");
     }
+    # The 1000 ms floor timeout fires before the fake's 1250 ms answer.
     def started as time.Time init time.now();
     try {
         call(withTimeout($c, 1000), "GET", "/Persons/slow", [], json.decode("null"));
@@ -283,7 +285,7 @@ func testCallAndDeadlines() {
         testing.assertEqual($e.kind, "timeout");
         testing.assertEqual($e.message, "jellyfin: GET /Persons/slow: no answer within 1000 ms");
     }
-    testing.assertTrue(time.milliseconds(time.sub(time.now(), $started)) < 2500);
+    testing.assertTrue(time.milliseconds(time.sub(time.now(), $started)) < 1250);
     for (def bad in [
         ["GET", "Items"],
         ["GET", "/Items/../System"],
@@ -356,7 +358,7 @@ func testAReasonIsNotRepeated() {
         status: 404,
         statusText: "Not Found",
         headers: {},
-        body: convert.bytesFromString("utf-8", '{"title":"Not Found"}')
+        body: encoding.encode("utf-8", '{"title":"Not Found"}')
     };
     try {
         checkStatus($r, "item x");

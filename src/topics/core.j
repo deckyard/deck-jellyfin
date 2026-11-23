@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.26.0
+# pragma-jennifer-version: >=0.27.0
 
 # jellyfin - core: the client and its settings, the MediaBrowser
 # authorization header, signing in and out, the HTTP exchange with its
@@ -475,7 +475,7 @@ func request(c as Client, method as string, path as string, body as string, what
 func jsonBody(r as http.BytesResponse, what as string) {
     def text as string init "";
     try {
-        $text = convert.stringFromBytes("utf-8", $r.body);
+        $text = encoding.decode("utf-8", $r.body);
     } catch (e) {
         fail($what + ": the response is not UTF-8");
     }
@@ -512,7 +512,7 @@ func checkStatus(r as http.BytesResponse, what as string) {
     def detail as string init "";
     def fields as map of string to string init {};
     try {
-        def text as string init strings.trim(convert.stringFromBytes("utf-8", $r.body));
+        def text as string init strings.trim(encoding.decode("utf-8", $r.body));
         if ($text != "" and not strings.startsWith($text, "<")) {
             $detail = $text;
             def v as json.Value init json.decode($text);
