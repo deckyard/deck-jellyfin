@@ -3,7 +3,7 @@
 
 # @deckyard/jellyfin
 
-[Jellyfin](https://jellyfin.org/) is a self-hosted media server for films,
+[Jellyfin™](https://jellyfin.org/) is a self-hosted media server for films,
 shows, music and photos. This deck is a client for its REST API: sign in,
 browse and search what a user sees, keep track of what was played, fetch
 posters, and look after the server (users, library scans, scheduled tasks,
@@ -54,3 +54,10 @@ they go into a URL.
 The deck follows the Jellyfin 10.9-and-later API (user ids as query
 parameters, `/UserViews`, `/UserItems/Resume`, `/UserPlayedItems`). It
 needs the `net` capability and does not run on `jennifer-tiny`.
+
+## Trademarks
+
+Jellyfin™ and other product and company names may be trademarks of their
+respective owners. They are used only to identify the products this deck
+works with. This deck is an independent project, not affiliated with,
+sponsored or endorsed by the Jellyfin project.

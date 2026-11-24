@@ -4,7 +4,7 @@
 [![Documentation](https://img.shields.io/badge/docs-github%20pages-blue)](https://deckyard.github.io/deck-jellyfin/)
 [![release](https://img.shields.io/github/v/release/deckyard/deck-jellyfin)](https://github.com/deckyard/deck-jellyfin/releases/latest)
 
-A client for the REST API of [Jellyfin](https://jellyfin.org/), the
+A client for the REST API of [Jellyfin™](https://jellyfin.org/), the
 self-hosted media server, for [Jennifer](https://jennifer-lang.dev/)
 programs: sign in with a password or an API key; browse, page and search
 a user's libraries; latest additions, resume and next up; played and
@@ -59,3 +59,10 @@ LGPL-3.0-only, see [LICENSE](LICENSE). Copyright (C) 2026 mplx &lt;mplx@jennifer
 
 `tools/check-headers.sh` checks every source file's SPDX header against
 `deck.toml`.
+
+## Trademarks
+
+Jellyfin™ and other product and company names may be trademarks of their
+respective owners. They are used only to identify the products this deck
+works with. This deck is an independent project, not affiliated with,
+sponsored or endorsed by the Jellyfin project.

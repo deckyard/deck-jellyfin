@@ -34,7 +34,7 @@ for (def u in jellyfin.users($c)) {
 
 ## The device
 
-Jellyfin keeps one session per device id and shows the client and device
+Jellyfin™ keeps one session per device id and shows the client and device
 names on its dashboard. `client` picks a random device id each time; a
 program that signs in on every run should give a stable one, or the
 server collects a session per run. Signing in again ends the earlier

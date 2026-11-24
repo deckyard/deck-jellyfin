@@ -5,7 +5,7 @@
 
 ## Scope
 
-A client for the REST API of the Jellyfin media server: sign-in with a
+A client for the REST API of the Jellyfin™ media server: sign-in with a
 password or an API key; libraries, items with paging, search, latest, resume,
 next up, episodes, played and favourite marks, images; server information,
 users, library and item refresh, scheduled tasks, sessions with messages and
@@ -59,7 +59,7 @@ administration; `call` reaches the REST side of them.
 
 - A status that is not 2xx throws `HttpError{kind: "jellyfin.http",
   message, status, fields}`: `status` is the HTTP status and `fields` the
-  ASP.NET validation errors of a 400 (field to its first message). The
+  ASP.NET™ validation errors of a 400 (field to its first message). The
   message carries ProblemDetails' `title` or `detail`, cleaned and capped. A
   refused login is a 401 with its own message.
 - `allItems` past its `most` is kind `"limit"`.

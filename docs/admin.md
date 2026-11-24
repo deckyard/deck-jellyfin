@@ -14,7 +14,7 @@ def s as jellyfin.ServerInfo init jellyfin.serverInfo($c);
 io.printf("%s, Jellyfin %s\n", $s.name, $s.version);
 ```
 
-`serverInfo` also checks that the URL answers as Jellyfin, version
+`serverInfo` also checks that the URL answers as Jellyfin™, version
 `MIN_MAJOR` or later.
 
 ## Users

@@ -28,7 +28,7 @@ is a `Client`; a `query` is a `list of string` of `name=value` parameters.
 |---|---|---|
 | `DEFAULT_TIMEOUT_MS` | `30000` | how long one request may take |
 | `DEFAULT_MAX_BYTES` | `16777216` | the largest response read |
-| `MIN_MAJOR` | `10` | the oldest Jellyfin major version `serverInfo` accepts |
+| `MIN_MAJOR` | `10` | the oldest Jellyfin™ major version `serverInfo` accepts |
 | `MAX_ITEMS` | `20000` | the most items `allItems` reads, about 450 MB with their JSON |
 
 ## The client
