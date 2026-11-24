@@ -7,7 +7,10 @@
 # favourite marks, images and metadata refresh. Spliced into jellyfin.j via
 # include.
 
-/** The most items `allItems` reads: 20000, about 450 MB with each item's JSON. */
+/**
+ * The most items `allItems` reads: 20000, with each item's JSON about 450 MB
+ * on Jennifer 0.27.0 and 260 MB from 0.28.0 on.
+ */
 export def const MAX_ITEMS as int init 20000;
 
 # the fields the list calls ask for besides the default ones, so `path` and
