@@ -112,7 +112,7 @@ administration; `call` reaches the REST side of them.
 
 ## Dependencies on the interpreter
 
-- Floor `>=0.27.0`, the default binary and the `net` capability (not
+- Floor `>=0.28.0` (the calls 0.29.0 removes are replaced by their 0.28.0 forms), the default binary and the `net` capability (not
   `jennifer-tiny`). The UTF-8 codecs of `encoding.encode` / `decode` and
   `strings.replicate` arrived in 0.27.0.
 - `http.requestWithBytes` with a byte cap, `task.waitTimeout` and

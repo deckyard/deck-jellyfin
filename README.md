@@ -41,7 +41,7 @@ for (def it in jellyfin.resume($c, 10)) {
 
 ## Requirements
 
-Jennifer 0.27.0 or newer and the default `jennifer` binary (the deck needs
+Jennifer 0.28.0 or newer and the default `jennifer` binary (the deck needs
 `net`), and Jellyfin 10.9 or newer.
 
 ## Development

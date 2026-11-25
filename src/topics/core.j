@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-3.0-only
 # SPDX-FileCopyrightText: Copyright (C) 2026 mplx <mplx@jennifer-lang.dev>
-# pragma-jennifer-version: >=0.27.0
+# pragma-jennifer-version: >=0.28.0
 
 # jellyfin - core: the client and its settings, the MediaBrowser
 # authorization header, signing in and out, the HTTP exchange with its
@@ -409,7 +409,12 @@ func exchange(c as Client, method as string, path as string, body as string, wha
     def maxBytes as int init $c.maxBytes;
     def tls as http.TlsOptions init $c.tls;
     def t as task of http.BytesResponse init spawn {
-        return http.requestWithBytes($method, $url, $headers, $body, $timeoutMs, $maxBytes, $tls);
+        return http.sendBytes(
+            $method,
+            $url,
+            $headers,
+            encoding.encode("utf-8", $body),
+            httpOptions($timeoutMs, $maxBytes, $tls));
     };
     try {
         return task.waitTimeout($t, $timeoutMs);
@@ -671,4 +676,21 @@ export func call(
         $payload = json.encode($body);
     }
     return request($c, $method, $path + queryOf($query), $payload, $method + " " + $path);
+}
+
+# httpOptions is the http.Options a positional timeout, body cap and TLS
+# setting stand for: a timeout of 0 means no idle timeout, as it did for the
+# positional calls.
+func httpOptions(timeoutMs as int, maxBytes as int, tls as http.TlsOptions) {
+    def o as http.Options;
+    $o.timeoutMs = $timeoutMs;
+    if ($timeoutMs == 0) {
+        $o.timeoutMs = math.MAX_INT;
+    }
+    $o.maxBytes = $maxBytes;
+    def t as net.TLSOptions;
+    $t.skipVerify = $tls.skipVerify;
+    $t.caCert = $tls.caCert;
+    $o.tlsOptions = $t;
+    return $o;
 }
